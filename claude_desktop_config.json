@@ -1,0 +1,16 @@
+{
+  "mcpServers": {
+    "agentkit": {
+      "command": "node",
+      "args": [
+        "/home/divij/payflow/build/index.js"
+      ],
+      "env": {
+        "CDP_API_KEY_ID": "e219fe75-fbb8-4d52-be67-221acf313d3d",
+        "CDP_API_KEY_SECRET": "e5JdA1PPosc5UdhqsUCeWVf245Mf+fbmoJN01ViU67b/Ho+vm6PNMSrpqTjV2u52Z7pQkrD+y8i2Ki9Vwwwffg==",
+        "NETWORK_ID": "base-sepolia",
+        "X402_PRIVATE_KEY": "0xa5c3651c6f39a416ed4859246b4c895f493d14851253cd47b077a2c91f7c7375"
+      }
+    }
+  }
+}
