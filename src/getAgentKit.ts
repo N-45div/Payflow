@@ -18,8 +18,8 @@ export async function getAgentKit(): Promise<AgentKit> {
     console.log("🔧 Initializing PayFlow AgentKit...");
     
     // Validate environment variables
-    const apiKeyId = process.env.CDP_API_KEY_ID || "ce7f27e1-3dc0-40b0-afb6-a307b5c50642";
-    const apiKeySecret = process.env.CDP_API_KEY_SECRET || "GNQB/J4aHuS+vBt6I7W5jHwddLS/UaTjoaW7kZqZaSmTsU+8e/+tsu2e9t2RO3uuDOYyWoky8kzblJ8UziZbxQ==" ;
+    const apiKeyId = process.env.CDP_API_KEY_ID || "";
+    const apiKeySecret = process.env.CDP_API_KEY_SECRET || "" ;
     const networkId = process.env.NETWORK_ID || "base-mainnet";
     
     if (!apiKeyId || !apiKeySecret) {
