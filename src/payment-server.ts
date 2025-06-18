@@ -2,7 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import { privateKeyToAccount } from 'viem/accounts';
 import { Hex, createPublicClient, http } from 'viem';
-import { baseSepolia } from 'viem/chains';
+import { base } from 'viem/chains';
 import fs from 'fs/promises';
 import path from 'path';
 
@@ -38,7 +38,7 @@ class PayFlowPaymentServer {
     
     // Initialize Viem client for Base Sepolia
     this.publicClient = createPublicClient({
-      chain: baseSepolia,
+      chain: base,
       transport: http()
     });
     
@@ -118,7 +118,7 @@ class PayFlowPaymentServer {
   private async handlePayment(req: express.Request, res: express.Response) {
     const paymentRequired = req.headers['x-payment-required'] as string;
     const paymentCurrency = req.headers['x-payment-currency'] as string || 'USDC';
-    const paymentNetwork = req.headers['x-payment-network'] as string || 'base-sepolia';
+    const paymentNetwork = req.headers['x-payment-network'] as string || 'base-mainnet';
     
     const body: PaymentRequest = req.body;
     

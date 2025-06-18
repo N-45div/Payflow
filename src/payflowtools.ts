@@ -274,7 +274,7 @@ async function getWalletDetailsHandler(agentKit: AgentKit, serverHealthy: boolea
           text: `💰 PayFlow Wallet Details
 
 📍 CDP Address: ${address}
-🌐 Network: ${process.env.NETWORK_ID || "base-sepolia"}
+🌐 Network: ${process.env.NETWORK_ID || "base-mainnet"}
 🔧 Provider: CDP v2 Wallet
 ✅ Status: Connected
 
@@ -393,7 +393,7 @@ async function callPaidApiWithLocalhost(args: any) {
       headers: {
         'X-Payment-Required': '0.01',
         'X-Payment-Currency': 'USDC',
-        'X-Payment-Network': 'base-sepolia',
+        'X-Payment-Network': 'base-mainnet',
         'Content-Type': 'application/json'
       }
     });
