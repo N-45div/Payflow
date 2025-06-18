@@ -8,10 +8,13 @@
     "agentkit": "./build/index.js"
   },
   "scripts": {
-    "build": "tsup && node -e \"require('fs').chmodSync('build/index.js', '755')\"",
+    "build": "tsup",
     "dev": "npm run build && node build/index.js",
-    "test": "npm run build && node test-payflow.js",
-    "start": "node build/index.js"
+    "payment-server": "npm run build && node build/payment-server.js",
+    "client": "npm run build && node build/client.js",
+    "test-full": "npm run payment-server & sleep 2 && npm run client",
+    "test-server": "curl http://localhost:3402/health",
+    "test-payments": "curl http://localhost:3402/payments"
   },
   "dependencies": {
     "@coinbase/agentkit": "^0.8.2",
@@ -20,11 +23,15 @@
     "@solana/web3.js": "^1.98.0",
     "axios": "^1.10.0",
     "bs58": "^6.0.0",
+    "cors": "^2.8.5",
     "dotenv": "^16.5.0",
+    "express": "^5.1.0",
     "viem": "^2.31.3",
     "x402-axios": "^0.4.0"
   },
   "devDependencies": {
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.3",
     "@types/node": "^22.13.9",
     "tsup": "^8.4.0",
     "tsx": "^4.19.3",
