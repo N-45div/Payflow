@@ -35,13 +35,13 @@ class PayFlowPaymentServer {
     this.app = express();
     this.port = port;
     this.paymentsFile = path.join('./payflow-data', 'payment-records.json');
-    
+
     // Initialize Viem client for Base Sepolia
     this.publicClient = createPublicClient({
       chain: base,
       transport: http()
     });
-    
+
     this.setupMiddleware();
     this.setupRoutes();
   }
@@ -49,7 +49,7 @@ class PayFlowPaymentServer {
   private setupMiddleware() {
     this.app.use(cors());
     this.app.use(express.json());
-    
+
     // x402 middleware - validate payment headers
     this.app.use((req, res, next) => {
       console.log(`📡 ${req.method} ${req.path}`);
@@ -61,8 +61,8 @@ class PayFlowPaymentServer {
   private setupRoutes() {
     // Health check
     this.app.get('/health', (req, res) => {
-      res.json({ 
-        status: 'healthy', 
+      res.json({
+        status: 'healthy',
         server: 'PayFlow x402 Payment Server',
         timestamp: new Date().toISOString()
       });
@@ -93,11 +93,11 @@ class PayFlowPaymentServer {
       try {
         const payments = await this.loadPayments();
         const payment = payments.find((p: PaymentRecord) => p.id === req.params.id);
-        
+
         if (!payment) {
           return res.status(404).json({ error: 'Payment not found' });
         }
-        
+
         res.json({ payment });
       } catch (error) {
         res.status(500).json({ error: 'Failed to load payment' });
@@ -119,9 +119,9 @@ class PayFlowPaymentServer {
     const paymentRequired = req.headers['x-payment-required'] as string;
     const paymentCurrency = req.headers['x-payment-currency'] as string || 'USDC';
     const paymentNetwork = req.headers['x-payment-network'] as string || 'base-mainnet';
-    
+
     const body: PaymentRequest = req.body;
-    
+
     console.log('💳 Processing payment request:');
     console.log('Required:', paymentRequired);
     console.log('Currency:', paymentCurrency);
@@ -131,7 +131,7 @@ class PayFlowPaymentServer {
     // Validate payment amount
     const requiredAmount = parseFloat(paymentRequired || '0');
     const requestAmount = body.amount || 0;
-    
+
     if (requiredAmount > 0 && requestAmount < requiredAmount) {
       return res.status(402).json({
         error: 'Payment Required',
@@ -144,7 +144,7 @@ class PayFlowPaymentServer {
     // Simulate payment processing
     const paymentId = `pay_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`;
     const txHash = `0x${Math.random().toString(16).substring(2)}${Math.random().toString(16).substring(2)}`;
-    
+
     const payment: PaymentRecord = {
       id: paymentId,
       amount: requestAmount,
@@ -184,16 +184,16 @@ class PayFlowPaymentServer {
   private async handleBountySubmission(req: express.Request, res: express.Response) {
     const { bountyId } = req.params;
     const { submissionData, submissionType, submitterWallet } = req.body;
-    
+
     console.log(`🎯 Processing bounty submission for: ${bountyId}`);
-    
+
     // This would normally validate against the bounty database
     // For now, we'll simulate the entry fee requirement
     const entryFee = 0.02; // Default entry fee
-    
+
     const paymentId = `bounty_${bountyId}_${Date.now()}`;
     const txHash = `0x${Math.random().toString(16).substring(2)}${Math.random().toString(16).substring(2)}`;
-    
+
     const payment: PaymentRecord = {
       id: paymentId,
       amount: entryFee,

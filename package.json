@@ -14,9 +14,14 @@
     "client": "npm run build && node build/client.js",
     "test-full": "npm run payment-server & sleep 2 && npm run client",
     "test-server": "curl http://localhost:3402/health",
-    "test-payments": "curl http://localhost:3402/payments"
+    "test-payments": "curl http://localhost:3402/payments",
+    "bedrock": "npm run build && node build/bedrock-client.js",
+    "setup-bedrock": "npm run build && node build/setup-bedrock.js"
   },
   "dependencies": {
+    "@aws-sdk/client-bedrock-agent": "^3.835.0",
+    "@aws-sdk/client-bedrock-agent-runtime": "^3.835.0",
+    "@aws-sdk/credential-providers": "^3.835.0",
     "@coinbase/agentkit": "^0.8.2",
     "@coinbase/agentkit-model-context-protocol": "^0.2.0",
     "@modelcontextprotocol/sdk": "^1.6.1",

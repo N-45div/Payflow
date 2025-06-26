@@ -30,7 +30,7 @@ let paymentClient: any = null;
 
 async function initializePaymentClient() {
   await initializePaymentInterceptor();
-  
+
   if (PRIVATE_KEY && PRIVATE_KEY.startsWith('0x') && PRIVATE_KEY.length === 66) {
     paymentAccount = privateKeyToAccount(PRIVATE_KEY);
     paymentClient = withPaymentInterceptor(axios.create({ baseURL: BASE_URL }), paymentAccount);
@@ -89,7 +89,7 @@ async function testPaymentServer() {
 async function getWalletAddress(agentKit: AgentKit): Promise<string> {
   try {
     const walletProvider = agentKit.walletProvider;
-    
+
     // Method 1: Try to get wallet and then address
     if (walletProvider && typeof walletProvider.getWallet === 'function') {
       try {
@@ -100,14 +100,14 @@ async function getWalletAddress(agentKit: AgentKit): Promise<string> {
             const address = await wallet.getDefaultAddress();
             if (address) return address;
           }
-          
+
           if (typeof wallet.getAddresses === 'function') {
             const addresses = await wallet.getAddresses();
             if (addresses && addresses.length > 0) {
               return addresses[0].getId ? addresses[0].getId() : addresses[0];
             }
           }
-          
+
           if (typeof wallet.getAddress === 'function') {
             const address = await wallet.getAddress();
             if (address) return address;
@@ -117,7 +117,7 @@ async function getWalletAddress(agentKit: AgentKit): Promise<string> {
         console.warn("Could not access wallet:", walletError);
       }
     }
-    
+
     // Method 2: Try direct access to wallet provider methods
     if (walletProvider && typeof walletProvider.getDefaultAddress === 'function') {
       try {
@@ -127,7 +127,7 @@ async function getWalletAddress(agentKit: AgentKit): Promise<string> {
         console.warn("Could not get default address:", providerError);
       }
     }
-    
+
     // Method 3: Check if wallet is directly accessible
     if (walletProvider && walletProvider.wallet) {
       try {
@@ -140,11 +140,11 @@ async function getWalletAddress(agentKit: AgentKit): Promise<string> {
         console.warn("Direct wallet access failed:", directError);
       }
     }
-    
+
     // If all methods fail, return placeholder
     console.warn("⚠️ Could not retrieve wallet address, using placeholder");
     return "0x742d35Cc6bB95b7C39c5C3a0b5F8d2d4E1AaBbC3"; // Fallback address
-    
+
   } catch (error) {
     console.error("Failed to get wallet address:", error);
     return "wallet-error";
@@ -154,10 +154,10 @@ async function getWalletAddress(agentKit: AgentKit): Promise<string> {
 export async function getPayFlowTools(agentKit: AgentKit) {
   // Initialize payment client
   await initializePaymentClient();
-  
+
   // Test payment server
   const serverHealthy = await testPaymentServer();
-  
+
   const tools = [
     {
       name: "get_wallet_details",
@@ -238,22 +238,22 @@ export async function getPayFlowTools(agentKit: AgentKit) {
     switch (name) {
       case "get_wallet_details":
         return await getWalletDetailsHandler(agentKit, serverHealthy);
-        
+
       case "test_payment_server":
         return await testPaymentServerHandler();
-        
+
       case "call_paid_api":
         return await callPaidApiWithLocalhost(args);
-        
+
       case "setup_bounty_board":
         return await setupBountyBoard(agentKit, args);
-        
+
       case "submit_bounty_entry":
         return await submitBountyEntryWithLocalhost(args);
-        
+
       case "view_payflow_analytics":
         return await viewPayFlowAnalytics(args);
-        
+
       default:
         throw new Error(`Unknown tool: ${name}`);
     }
@@ -266,7 +266,7 @@ export async function getPayFlowTools(agentKit: AgentKit) {
 async function getWalletDetailsHandler(agentKit: AgentKit, serverHealthy: boolean) {
   try {
     const address = await getWalletAddress(agentKit);
-    
+
     return {
       content: [
         {
@@ -290,9 +290,9 @@ ${serverHealthy ? '✅ Real localhost payments' : '❌ Payment server offline'}
 - Service monetization
 - Real-time analytics
 
-${serverHealthy ? 
-  '🔥 Ready for real payments via localhost server! 💰' : 
-  '⚠️ Start payment server: npm run payment-server'}
+${serverHealthy ?
+              '🔥 Ready for real payments via localhost server! 💰' :
+              '⚠️ Start payment server: npm run payment-server'}
 
 Status: ${serverHealthy && PRIVATE_KEY ? 'FULLY OPERATIONAL' : 'LIMITED MODE'} 🚀`
         },
@@ -320,7 +320,7 @@ async function testPaymentServerHandler() {
   try {
     const healthResponse = await axios.get(`${BASE_URL}/health`);
     const paymentsResponse = await axios.get(`${BASE_URL}/payments`);
-    
+
     return {
       content: [
         {
@@ -374,11 +374,11 @@ async function callPaidApiWithLocalhost(args: any) {
     }
 
     const { url, method = "GET", data, headers } = args;
-    
+
     console.log(`🔄 Making REAL paid API call via localhost payment server`);
     console.log(`🎯 Target URL: ${url}`);
     console.log(`💳 Payment Server: ${BASE_URL}`);
-    
+
     // Make payment request to localhost server
     const paymentResponse = await paymentClient.post(PAYMENT_ENDPOINT, {
       amount: 0.01, // Default test amount
@@ -405,7 +405,7 @@ async function callPaidApiWithLocalhost(args: any) {
 
     // Now make the actual API call (this would be done by the paid service)
     let apiResponse = { data: "Paid API call successful - payment processed!" };
-    
+
     try {
       const actualApiResponse = await axios({ url, method, data, headers });
       apiResponse = actualApiResponse;
@@ -423,10 +423,10 @@ async function callPaidApiWithLocalhost(args: any) {
       timestamp: new Date().toISOString(),
       success: true
     });
-    
+
     return {
-      content: [{ 
-        type: "text", 
+      content: [{
+        type: "text",
         text: `✅ REAL Paid API Call Successful! 💰
 
 🔗 Target Endpoint: ${url}
@@ -439,17 +439,17 @@ async function callPaidApiWithLocalhost(args: any) {
 📊 API Response: ${JSON.stringify(apiResponse.data, null, 2)}
 
 🎯 Real payment processed via localhost server!
-💳 Payment recorded and logged successfully.` 
+💳 Payment recorded and logged successfully.`
       }]
     };
-    
+
   } catch (error: any) {
     console.error('Localhost paid API call error:', error);
-    
+
     if (error.response?.status === 402) {
       return {
-        content: [{ 
-          type: "text", 
+        content: [{
+          type: "text",
           text: `💳 REAL Payment Required - Localhost Server
 
 🔗 URL: ${args.url}
@@ -464,11 +464,11 @@ Troubleshooting:
 - Check server health: test_payment_server
 - Verify payment configuration
 
-Error: ${error.message}` 
+Error: ${error.message}`
         }]
       };
     }
-    
+
     throw new Error(`Localhost API call failed: ${error.message}`);
   }
 }
@@ -476,28 +476,28 @@ Error: ${error.message}`
 // Submit bounty entry with localhost payment
 async function submitBountyEntryWithLocalhost(args: any) {
   const { bountyId, submissionData, submissionType, submitterWallet } = args;
-  
+
   try {
     const bounties = await loadData(BOUNTIES_FILE);
     const bountyIndex = bounties.findIndex((b: any) => b.id === bountyId);
-    
+
     if (bountyIndex === -1) {
       throw new Error(`Bounty ${bountyId} not found`);
     }
-    
+
     const bounty = bounties[bountyIndex];
-    
+
     if (new Date(bounty.deadline) < new Date()) {
       throw new Error("Bounty deadline has passed");
     }
-    
+
     if (bounty.submissions.length >= bounty.maxSubmissions) {
       throw new Error("Maximum submissions reached");
     }
 
     // 🔥 PROCESS REAL PAYMENT VIA LOCALHOST
     console.log(`💳 Processing REAL entry fee via localhost: $${bounty.entryFee} USDC`);
-    
+
     const paymentResponse = await axios.post(`${BASE_URL}/bounty/${bountyId}/submit`, {
       submissionData,
       submissionType,
@@ -523,16 +523,16 @@ async function submitBountyEntryWithLocalhost(args: any) {
       paymentTxHash: txHash,
       actualCost
     };
-    
+
     // Update bounty
     bounty.totalCollected += actualCost;
     bounty.submissions.push(submission);
     bounties[bountyIndex] = bounty;
     await saveData(BOUNTIES_FILE, bounties);
-    
+
     return {
-      content: [{ 
-        type: "text", 
+      content: [{
+        type: "text",
         text: `🎨 Bounty Entry Submitted with REAL Localhost Payment! 💰
 
 📋 SUBMISSION DETAILS:
@@ -560,10 +560,10 @@ async function submitBountyEntryWithLocalhost(args: any) {
 - Winner announcement
 - Real payout via CDP wallet
 
-Your entry is confirmed with REAL localhost payment! 🏆💰` 
+Your entry is confirmed with REAL localhost payment! 🏆💰`
       }]
     };
-    
+
   } catch (error: any) {
     if (error.response?.status === 404) {
       throw new Error(`Localhost payment server not reachable. Run: npm run payment-server`);
@@ -575,13 +575,13 @@ Your entry is confirmed with REAL localhost payment! 🏆💰`
 // Enhanced setup bounty board
 async function setupBountyBoard(agentKit: AgentKit, args: any) {
   const { bountyTitle, bountyAmount, entryFee, maxSubmissions, evaluationCriteria, submissionDeadline } = args;
-  
+
   const bountyId = `bounty_${Date.now()}`;
   const totalPotentialFees = entryFee * maxSubmissions;
-  
+
   // Get wallet address properly
   const escrowWallet = await getWalletAddress(agentKit);
-  
+
   const bounty = {
     id: bountyId,
     title: bountyTitle,
@@ -597,15 +597,15 @@ async function setupBountyBoard(agentKit: AgentKit, args: any) {
     escrowWallet,
     paymentServer: BASE_URL
   };
-  
+
   // Save bounty
   const bounties = await loadData(BOUNTIES_FILE);
   bounties.push(bounty);
   await saveData(BOUNTIES_FILE, bounties);
-  
+
   return {
-    content: [{ 
-      type: "text", 
+    content: [{
+      type: "text",
       text: `🎯 Bounty Board Created with Localhost Payments!
 
 🏆 BOUNTY DETAILS:
@@ -634,7 +634,7 @@ async function setupBountyBoard(agentKit: AgentKit, args: any) {
 
 Status: 🟢 LIVE - Ready to accept submissions with REAL payments!
 
-Next: Submit entries with submit_bounty_entry 📢` 
+Next: Submit entries with submit_bounty_entry 📢`
     }]
   };
 }
@@ -651,16 +651,16 @@ async function viewPayFlowAnalytics(args: any) {
     const bounties = await loadData(BOUNTIES_FILE);
     const services = await loadData(SERVICES_FILE);
     const payments = await loadData(PAYMENTS_FILE);
-    
+
     const totalBounties = bounties.length;
     const activeBounties = bounties.filter((b: any) => b.status === 'active').length;
     const totalBountyValue = bounties.reduce((sum: number, b: any) => sum + b.amount, 0);
     const totalCollected = bounties.reduce((sum: number, b: any) => sum + b.totalCollected, 0);
-    
+
     const totalServices = services.length;
     const totalPayments = payments.length;
     const totalPaymentVolume = payments.reduce((sum: number, p: any) => sum + (p.amount || 0), 0);
-    
+
     // Test payment server status
     let serverStatus = "Unknown";
     try {
@@ -669,10 +669,10 @@ async function viewPayFlowAnalytics(args: any) {
     } catch {
       serverStatus = "❌ Offline";
     }
-    
+
     return {
-      content: [{ 
-        type: "text", 
+      content: [{
+        type: "text",
         text: `📊 PayFlow Analytics Dashboard
 
 🔗 PAYMENT SERVER: ${BASE_URL}
@@ -699,10 +699,10 @@ async function viewPayFlowAnalytics(args: any) {
 - Total platform revenue: $${(totalCollected * 0.05).toFixed(2)} (5% fee)
 
 🎯 TOP PERFORMERS:
-${bounties.sort((a: any, b: any) => b.totalCollected - a.totalCollected).slice(0, 3).map((b: any, i: number) => 
-  `${i + 1}. ${b.title}: $${b.totalCollected} collected`).join('\n')}
+${bounties.sort((a: any, b: any) => b.totalCollected - a.totalCollected).slice(0, 3).map((b: any, i: number) =>
+          `${i + 1}. ${b.title}: $${b.totalCollected} collected`).join('\n')}
 
-🔥 All operations running with REAL localhost payments! 🤖✨` 
+🔥 All operations running with REAL localhost payments! 🤖✨`
       }]
     };
   } catch (error: any) {

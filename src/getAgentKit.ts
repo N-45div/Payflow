@@ -16,23 +16,23 @@ import {
 export async function getAgentKit(): Promise<AgentKit> {
   try {
     console.log("🔧 Initializing PayFlow AgentKit...");
-    
+
     // Validate environment variables
-    const apiKeyId = process.env.CDP_API_KEY_ID || "";
-    const apiKeySecret = process.env.CDP_API_KEY_SECRET || "" ;
+    const apiKeyId = process.env.CDP_API_KEY_ID || "ce7f27e1-3dc0-40b0-afb6-a307b5c50642";
+    const apiKeySecret = process.env.CDP_API_KEY_SECRET || "GNQB/J4aHuS+vBt6I7W5jHwddLS/UaTjoaW7kZqZaSmTsU+8e/+tsu2e9t2RO3uuDOYyWoky8kzblJ8UziZbxQ==";
     const networkId = process.env.NETWORK_ID || "base-mainnet";
-    
+
     if (!apiKeyId || !apiKeySecret) {
       throw new Error("Missing CDP credentials: CDP_API_KEY_ID and CDP_API_KEY_SECRET required");
     }
-    
+
     console.log(`🌐 Network: ${networkId}`);
     console.log(`🔑 API Key ID: ${apiKeyId.substring(0, 8)}...`);
     console.log(`🔒 API Secret: ${apiKeySecret.substring(0, 8)}...`);
-    
+
     // Test CDP connection first
     console.log("🔍 Testing CDP connection...");
-    
+
     // Initialize CDP WalletProvider with detailed error handling
     let walletProvider;
     try {
@@ -44,7 +44,7 @@ export async function getAgentKit(): Promise<AgentKit> {
       console.log("✅ CDP Wallet provider configured successfully");
     } catch (cdpError: any) {
       console.error("❌ CDP Wallet configuration failed:", cdpError);
-      
+
       // Provide specific error information
       if (cdpError.message.includes('401') || cdpError.message.includes('Unauthorized')) {
         throw new Error(`CDP Authentication failed: Invalid API credentials. Please check your CDP_API_KEY_ID and CDP_API_KEY_SECRET.`);
@@ -64,7 +64,7 @@ export async function getAgentKit(): Promise<AgentKit> {
       walletActionProvider(),
       erc20ActionProvider(),
     ];
-    
+
     // Add optional providers with error handling
     try {
       actionProviders.push(wethActionProvider());
@@ -72,14 +72,14 @@ export async function getAgentKit(): Promise<AgentKit> {
     } catch (error) {
       console.warn("⚠️ WETH provider skipped:", error);
     }
-    
+
     try {
       actionProviders.push(pythActionProvider());
       console.log("✅ Pyth provider added");
     } catch (error) {
       console.warn("⚠️ Pyth provider skipped:", error);
     }
-    
+
     // Try to add CDP API providers
     try {
       const cdpApiProvider = cdpApiActionProvider({
@@ -91,7 +91,7 @@ export async function getAgentKit(): Promise<AgentKit> {
     } catch (cdpApiError: any) {
       console.warn("⚠️ CDP API action provider skipped:", cdpApiError.message);
     }
-    
+
     try {
       const cdpWalletProvider = cdpWalletActionProvider({
         apiKeyId,
@@ -113,7 +113,7 @@ export async function getAgentKit(): Promise<AgentKit> {
     });
 
     console.log("✅ PayFlow AgentKit initialized successfully!");
-    
+
     // Test wallet functionality
     try {
       const testAddress = await agentkit.walletProvider.getDefaultAddress();
@@ -121,9 +121,9 @@ export async function getAgentKit(): Promise<AgentKit> {
     } catch (walletTestError) {
       console.warn("⚠️ Wallet test failed (but AgentKit created):", walletTestError);
     }
-    
+
     return agentkit;
-    
+
   } catch (error: any) {
     console.error("❌ AgentKit initialization failed:", error.message);
     throw new Error(`Failed to initialize AgentKit: ${error.message}`);
