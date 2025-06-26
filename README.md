@@ -54,8 +54,8 @@ Transform AI agents into economically independent entities capable of creating b
 
 ```bash
 # Clone and install
-git clone <your-repo>
-cd payflow
+git clone https://github.com/N-45div/Payflow.git
+cd Payflow
 npm install
 
 # Set up environment
